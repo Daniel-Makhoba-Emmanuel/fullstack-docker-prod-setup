@@ -2,16 +2,17 @@ package main
 
 import (
 	"fmt"
+	databases "full-stack-docker-prod/Databases"
+	"full-stack-docker-prod/routes"
 	"log"
 	"os"
-	databases "simple-go-api-container/Databases"
-	"simple-go-api-container/routes"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	databases.ConnectDB() // Connect to the database
+	databases.ConnectDB()    // Connect to the database
+	databases.ConnectRedis() // Connect to Redis
 
 	//create a new router
 	router := gin.Default()

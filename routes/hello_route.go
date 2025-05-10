@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"simple-go-api-container/handlers"
+	"full-stack-docker-prod/handlers"
 
 	"github.com/gin-gonic/gin"
 )
