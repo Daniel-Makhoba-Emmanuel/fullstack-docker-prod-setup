@@ -1,16 +1,74 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Container, Layers, Code, Server, Database, Shield } from 'lucide-react';
+import { Container, Layers, Code, Server, Database, Shield, Loader } from 'lucide-react';
 import { Button } from './ui/button';
 import { Separator } from './ui/separator';
+import APIResponse from './APIResponse';
+
+// Mock API function that simulates a backend request
+const fetchFromBackend = () => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({
+        status: "success",
+        message: "Data retrieved successfully",
+        platform: {
+          name: "Quantum Platform",
+          version: "1.5.2",
+          components: [
+            {
+              name: "Docker Engine",
+              version: "24.0.7",
+              status: "running"
+            },
+            {
+              name: "Kubernetes Cluster",
+              version: "1.28.3",
+              status: "healthy",
+              nodes: 3,
+              pods: 24
+            },
+            {
+              name: "Service Mesh",
+              version: "2.1.0",
+              status: "configured"
+            }
+          ],
+          metrics: {
+            uptime: "99.98%",
+            responseTime: "45ms",
+            activeInstances: 12
+          }
+        }
+      });
+    }, 1500); // Simulate network delay
+  });
+};
 
 const HomePage: React.FC = () => {
   const [isLoaded, setIsLoaded] = useState(false);
+  const [apiData, setApiData] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setIsLoaded(true);
   }, []);
+
+  const handleFetchData = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const data = await fetchFromBackend();
+      setApiData(data);
+    } catch (err) {
+      setError("Failed to fetch data from the backend.");
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="w-full min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-900 via-slate-900 to-blue-950 px-4 relative overflow-hidden">
@@ -120,6 +178,26 @@ const HomePage: React.FC = () => {
               Applications
             </Button>
           </motion.div>
+          
+          <motion.div 
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.98 }}
+            className="inline-block"
+          >
+            <Button 
+              variant="outline" 
+              className="border-blue-500 text-blue-400 hover:bg-blue-900/20"
+              onClick={handleFetchData}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <Loader className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Server className="mr-2 h-4 w-4" />
+              )}
+              Fetch Data
+            </Button>
+          </motion.div>
         </div>
         
         <div className="flex flex-wrap justify-center gap-6 max-w-lg mx-auto mb-10">
@@ -147,6 +225,16 @@ const HomePage: React.FC = () => {
             <p className="text-blue-100 text-sm">Powered by Kubernetes for automatic scaling, deployment, and management of applications.</p>
           </motion.div>
         </div>
+        
+        {/* API Response Display Box */}
+        <motion.div
+          className="w-full mb-12"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 20 }}
+          transition={{ duration: 0.5, delay: 0.7 }}
+        >
+          <APIResponse isLoading={isLoading} data={apiData} error={error} />
+        </motion.div>
         
         <div className="text-center text-blue-200 text-sm max-w-lg mx-auto px-4">
           <Shield className="inline-block text-cyan-400 h-4 w-4 mr-2" />
