@@ -1,16 +1,27 @@
-# Welcome to my full stack docker prodcution setup(Local)
+# Full Stack Docker Production Setup (Local)
 
-Hey everyone, welcome to docker project!. The whole point of this project is to implement docker on a production scale for a fullstack application(Frontend + Backend + Database + Cache ) Everything from ports, to networks all the way down to the images is secured and implements best practices.
+Welcome to my Docker project! This repository demonstrates a production-grade full-stack application setup using Docker. The project integrates a React frontend, a Go-based backend, PostgreSQL for the database, and Redis for caching. 
 
-## NAVIGATING THE REPO
-The project repo is pretty large(it will be by the time i'm done:)), to help you know what's where, and how to implement it, here's a breakdown. The project can be broken down into three broad catgories
+## Table of Contents
+- [Full Stack Docker Production Setup (Local)](#full-stack-docker-production-setup-local)
+  - [Table of Contents](#table-of-contents)
+  - [Navigating the Repository](#navigating-the-repository)
+    - [FRONTEND](#frontend)
+  - [BACKEND](#backend)
+  - [DOCKER](#docker)
+  - [Compose.yaml](#composeyaml)
+  - [Dockerfile.frontend](#dockerfilefrontend)
+  - [Dockerfile.prod](#dockerfileprod)
+
+## Navigating the Repository
+The project repository is pretty large(it will be by the time i'm done:)),so to help you know what's where, and how to implement it, here's a breakdown. The project is broken down into three broad catgories
 
 - Frontend
 - Backend
 - Docker 
 
 ### FRONTEND
-I'm a kubernetes engineer not a frontend engineer, so developing a frontend from scratch was out of the question. To solve this I used lovable AI(lovable.dev) to generate the frontend code which is in react and typescript. The frontend is designed to show that this project uses docker, with features such as buttons that communicate with the containerized backend(API) and get a response.
+I'm a Kubernetes engineer not a Frontend engineer, so developing a frontend from scratch is out of the question. To solve this I used lovable AI(lovable.dev) to generate the frontend code. The frontend is designed to show that this project uses docker, with features such as buttons that communicate with the containerized backend(API) and get a response.
 
 ![alt text](image.png)
 
@@ -22,10 +33,10 @@ I'm a kubernetes engineer not a frontend engineer, so developing a frontend from
 - shadcn-ui
 - Tailwind CSS
 
-You can run the frontend code seperately without a docker container if you want to see it outside a container. For more information on the frontend setup, navigate to the `react-hello-world-start` folder. It has it's own dedicated readme.
+You can run the frontend code seperately without a docker container. For more information on the frontend setup, navigate to the `react-hello-world-start` folder. It has it's own dedicated readme.
 
 ## BACKEND
-Lets talk about the backend. Again i'm a kubernetes engineer :), so my knowlege on backne services isn't the vastest but i'd say my skills in GO are pretty solid, hence the backend written purely in GO. The backend is broken into several folders/files:
+Lets talk about the backend. Again i'm a kubernetes engineer, so my knowlege on backned services isn't the vastest but i'd say my skills in GO are pretty solid, hence the backend written purely in GO. The backend is broken into several folders/files:
 
 **The stack used for the frontend include:**
 
