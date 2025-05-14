@@ -64,6 +64,25 @@ services:
       retries: 5
       start_period: 5s
 
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    image: portfolio_frontend:latest
+    container_name: portfolio_frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - portfolio_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:80/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
     
 
 networks:
