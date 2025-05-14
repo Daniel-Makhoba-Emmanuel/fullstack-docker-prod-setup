@@ -6,44 +6,20 @@ import { Button } from './ui/button';
 import { Separator } from './ui/separator';
 import APIResponse from './APIResponse';
 
-// Mock API function that simulates a backend request
-const fetchFromBackend = () => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        status: "success",
-        message: "Data retrieved successfully",
-        platform: {
-          name: "Quantum Platform",
-          version: "1.5.2",
-          components: [
-            {
-              name: "Docker Engine",
-              version: "24.0.7",
-              status: "running"
-            },
-            {
-              name: "Kubernetes Cluster",
-              version: "1.28.3",
-              status: "healthy",
-              nodes: 3,
-              pods: 24
-            },
-            {
-              name: "Service Mesh",
-              version: "2.1.0",
-              status: "configured"
-            }
-          ],
-          metrics: {
-            uptime: "99.98%",
-            responseTime: "45ms",
-            activeInstances: 12
-          }
-        }
-      });
-    }, 1500); // Simulate network delay
-  });
+// Updated API function to fetch from the backend via Nginx proxy
+const fetchFromBackend = async () => {
+  // This request will go to Nginx (e.g., http://localhost:3000/api/)
+  // Nginx will then proxy it to your Go API service at http://api:8080/
+  // since your Go API has a "/" route, this should work directly.
+  const response = await fetch('/api/'); // The path /api/ is what Nginx listens for
+
+  if (!response.ok) {
+    // Try to get more detailed error information from the response
+    const errorBody = await response.text(); // Or response.json() if your API returns JSON errors
+    throw new Error(`Network response was not ok. Status: ${response.status}. Body: ${errorBody}`);
+  }
+  return response.json(); // Assuming your Go API returns JSON.
+                         // If it returns plain text or something else, adjust accordingly (e.g., response.text())
 };
 
 const HomePage: React.FC = () => {
@@ -60,15 +36,19 @@ const HomePage: React.FC = () => {
     try {
       setIsLoading(true);
       setError(null);
+      setApiData(null); // Clear previous data/error
       const data = await fetchFromBackend();
       setApiData(data);
-    } catch (err) {
-      setError("Failed to fetch data from the backend.");
-      console.error(err);
+    } catch (err: any) { // Catching 'any' type for error, then checking message
+      setError(err.message || "Failed to fetch data from the backend.");
+      console.error("Error fetching data:", err);
     } finally {
       setIsLoading(false);
     }
   };
+
+  // ... rest of your HomePage component remains the same ...
+  // (Make sure to include the full component structure from your original post)
 
   return (
     <div className="w-full min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-900 via-slate-900 to-blue-950 px-4 relative overflow-hidden">
@@ -78,46 +58,21 @@ const HomePage: React.FC = () => {
       </div>
       
       {/* Floating elements */}
-      <div className="absolute inset-0 z-0 opacity-20">
-        <motion.div 
-          className="absolute top-10 left-10 w-20 h-20 border-2 border-teal-400 rounded"
-          animate={{ 
-            rotate: [0, 90, 180, 270, 360],
-            y: [0, -10, 0, 10, 0],
-            opacity: [0.2, 0.5, 0.2]
-          }}
-          transition={{ 
-            duration: 15,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-        />
-        <motion.div 
-          className="absolute top-40 right-20 w-32 h-16 border-2 border-blue-400 rounded-lg"
-          animate={{
-            rotate: [0, -20, 0, 20, 0],
-            x: [0, 20, 0, -20, 0],
-            opacity: [0.1, 0.3, 0.1]
-          }}
-          transition={{ 
-            duration: 20,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-        />
-        <motion.div 
-          className="absolute bottom-40 left-40 w-24 h-24 border-2 border-cyan-500 rounded-full"
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.1, 0.2, 0.1]
-          }}
-          transition={{ 
-            duration: 8,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-        />
-      </div>
+      <motion.div 
+        className="absolute top-10 left-10 w-20 h-20 border-2 border-teal-400 rounded"
+        animate={{ rotate: [0, 90, 180, 270, 360], y: [0, -10, 0, 10, 0], opacity: [0.2, 0.5, 0.2] }}
+        transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+      />
+      <motion.div 
+        className="absolute top-40 right-20 w-32 h-16 border-2 border-blue-400 rounded-lg"
+        animate={{ rotate: [0, -20, 0, 20, 0], x: [0, 20, 0, -20, 0], opacity: [0.1, 0.3, 0.1] }}
+        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+      />
+      <motion.div 
+        className="absolute bottom-40 left-40 w-24 h-24 border-2 border-cyan-500 rounded-full"
+        animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
+        transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+      />
 
       <motion.div
         className="text-center z-10 relative"
