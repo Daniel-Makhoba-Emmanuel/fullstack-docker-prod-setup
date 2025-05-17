@@ -1,54 +1,22 @@
-# Welcome to your Lovable project
+# React Hello World Frontend
+![alt text](../image.png)
 
-## Project info
+This is the frontend for my **Full Stack Docker Production Setup (Local)**. The frontend was generated using **Lovable.dev**, an AI-powered platform that creates applications based on prompts. The theme for this project is a **Docker/Kubernetes-themed Single Page Application (SPA)**, designed to showcase containerized backend interactions.
 
-**URL**: https://lovable.dev/projects/8aa4f6b9-e74f-4403-9042-9c3bea95d747
+The application demonstrates how a React-based frontend can seamlessly integrate with containerized backend services using **Nginx** as a reverse proxy.
 
-## How can I edit this code?
+---
 
-There are several ways of editing your application.
+## Deployment Instructions
 
-**Use Lovable**
+To deploy this project, follow these steps:
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/8aa4f6b9-e74f-4403-9042-9c3bea95d747) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+1. **Clone the Repository**  
+   Clone the repository to your local machine:
+   ```sh
+   git clone <YOUR_GIT_URL>
+   cd <YOUR_PROJECT_NAME>
+   ```
 
 ## What technologies are used for this project?
 
@@ -60,14 +28,77 @@ This project is built with:
 - shadcn-ui
 - Tailwind CSS
 
-## How can I deploy this project?
+## Install dependencies
 
-Simply open [Lovable](https://lovable.dev/projects/8aa4f6b9-e74f-4403-9042-9c3bea95d747) and click on Share -> Publish.
+`npm install`
 
-## Can I connect a custom domain to my Lovable project?
+## Run the Development Server
+`npm run dev`
 
-Yes, you can!
+## Build for Production
+`npm run build`
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## What technologies are used for this project?
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+This project is built with:
+
+- Vite
+- TypeScript
+- React
+- shadcn-ui
+- Tailwind CSS
+
+## Nginx Configuration for Container Integration
+
+The nginx.conf file plays a critical role in connecting the frontend to the backend containers. It is configured to:
+
+- Serve the React application as a static site.
+- Proxy API requests from the frontend to the backend container.
+  
+Here’s the nginx.conf used in this project:
+
+# This configuration will be copied to /etc/nginx/conf.d/default.conf in the Nginx container
+
+```bash
+server {
+    listen 80;
+    server_name localhost; # You can change this if you have a domain
+
+    # Serve React static files
+    location / {
+        root   /usr/share/nginx/html; # Nginx's default static file directory
+        index  index.html index.htm;
+        try_files $uri $uri/ /index.html; # Crucial for Single Page Applications (SPAs) like React
+                                          # This ensures that navigating directly to a route like /about
+                                          # still serves index.html, allowing React Router to handle it.
+    }
+
+    # Proxy API requests to the Go backend
+    # Any request starting with /api/ will be forwarded
+    location /api/ {
+        # The 'api' here is the service name of your Go backend in docker-compose.yaml
+        # Docker's internal DNS will resolve 'api' to the Go container's IP address.
+        # The port 8080 is the port your Go API listens on INSIDE its container.
+        proxy_pass http://api:8080/;
+
+        # Standard proxy headers to pass along to the backend
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # Optional: If you encounter issues with buffering or timeouts, you might adjust these
+        # proxy_buffering off;
+        # proxy_request_buffering off; # Useful for streaming or long-polling
+        # proxy_http_version 1.1; # Recommended for keep-alive connections
+        # proxy_read_timeout 300s;
+        # proxy_connect_timeout 75s;
+    }
+
+    # Optional: Custom error pages
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html; # You can place custom error pages here
+    }
+}
+```
