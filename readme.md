@@ -9,9 +9,12 @@ Welcome to my Docker project! This repository demonstrates a production-grade fu
     - [FRONTEND](#frontend)
   - [BACKEND](#backend)
   - [DOCKER](#docker)
-  - [Compose.yaml](#composeyaml)
-  - [Dockerfile.frontend](#dockerfilefrontend)
-  - [Dockerfile.prod](#dockerfileprod)
+    - [Compose.yaml](#composeyaml)
+    - [Dockerfile.frontend](#dockerfilefrontend)
+    - [Dockerfile.prod](#dockerfileprod)
+  - [Continious Integration(CI)](#continious-integrationci)
+  - [Security](#security)
+  - [Improvements](#improvements)
 
 ## Navigating the Repository
 The project repository is pretty large(it will be by the time i'm done:)),so to help you know what's where, and how to implement it, here's a breakdown. The project is broken down into three broad catgories
@@ -72,20 +75,29 @@ The different layers/technologies used in this setup are contianerized, and conf
 - `Dockerfile.frontend`
 - `Dockerfile.prod`
 
-## Compose.yaml
+### Compose.yaml
 The different services/networks/volumes are configured here(i'm trolling :) ). But seriously, looking at the configurations each services is configured with a health check to confirm the container is running and not dead. You'll want to create a .env file for this and configure your variables. You don't have to worry about any of these being built into the images/containers, the `.env`, `.gitignore` and .`dockerignore` are taking care of these
 
 If you take a closer look at the `Api` service, you can see the that the docker image for the backend is built here , so you dont have to worry about pulling it from a dockerhub. quay or whichever service you used, but in a prod environment (totally my opinion), it should definitely be pulled from one, with more dynamic tagging and versioning used.
 
-## Dockerfile.frontend
+### Dockerfile.frontend
 This is used to build the react appplication image. In the file image uses a multi-satage build , with a lightweight nginx as the final image. It's also removed from root user, following the principle of least privilege (PoLP), which simply means the user created only accesses what it needs to run (so root directory access is out of the question). 
 
 You could also implement the healthcheck for this in the image itself i suppose and remove it from the `compose.yaml`
 
-## Dockerfile.prod
+### Dockerfile.prod
 Poor naming convention here guys, definitely establish a naming convention before you start your projects. This actually builds the image for the backend(API) container. It uses a similar configuration to the react image in the sense PoLP is followed, a lightwieght image(alpine) is used as the final image. 
 
 However, unlike the frontend image debugginf information specifically `DWARF` and `symbols table` is removed to reduce the size and prevent reverse enfineering using debugger/profile tools. This dropped the image by 6-8 mb if i'm not mistaken, you can easily compare this using `docker history` on the image to examine the image layers
+
+
+## Continious Integration(CI)
+
+
+## Security 
+
+
+## Improvements
 
 
 
