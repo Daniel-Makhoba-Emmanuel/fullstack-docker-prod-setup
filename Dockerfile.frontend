@@ -21,6 +21,9 @@ RUN npm run build
 # Stage 2: Serve the application with Nginx
 FROM nginx:stable-alpine AS production
 
+# fix a security vulnerability in the alpine image
+RUN apk update --no-cache && apk upgrade
+
 # Create a non-root user and group
 RUN addgroup -g 1000 appgroup && adduser -u 1000 -G appgroup -s /bin/sh -D appuser
 
