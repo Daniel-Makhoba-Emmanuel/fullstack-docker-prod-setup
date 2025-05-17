@@ -57,7 +57,7 @@ The nginx.conf file plays a critical role in connecting the frontend to the back
   
 Here’s the nginx.conf used in this project:
 
-# This configuration will be copied to /etc/nginx/conf.d/default.conf in the Nginx container
+### This configuration will be copied to /etc/nginx/conf.d/default.conf in the Nginx container
 
 ```bash
 server {
